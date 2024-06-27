@@ -114,13 +114,20 @@ function update_progressbar(percent) {
 
 // "서버 전송하기" 버튼을 클릭한 경우 파일을 서버로 보내기 (비동기 통신)
 $(function(){
-    /* socket.io 처리 */
+    /* socket.io 처리 
+        기존(I 딥러닝 배포) : 단방향 (클라이언트가 request 보내면 서버가 response 보냄)
+        소켓 : 양방향
+    */
     $(function(){
         const socket = io();
-        // 서버(main_views.py)와 연결
-        socket.connect('http://172.20.232.107:5667');
+        // 서버(main_views.py' index())와 연결
+        socket.connect('http://172.20.232.107:5678/');
         socket.on('connect', function(){
             console.log('success');
+        });
+        socket.on('process_status', function(percent){ // 2nd : callback
+            console.log(percent);
+            update_progressbar(percent)
         });
     });
 

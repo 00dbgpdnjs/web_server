@@ -54,6 +54,8 @@ function add_file(obj){
         }
 
     }
+
+    $('input[type=file]').val('') // 첨부 파일을 저장하였으므로 form input 내용 초기화
 }
 
 function validation(obj){
@@ -95,4 +97,61 @@ function validation(obj){
     }else{
         return true;
     }
+}
+
+function deleteFile(num){
+    $('#file' + num).remove();
+    FILE_ARRAY.splice(num, 1); //해당 idx(num)에서 1개 삭제
+    FILE_NUM--;
+}
+
+// "서버 전송하기" 버튼을 클릭한 경우 파일을 서버로 보내기 (비동기 통신)
+$(function(){
+    let submit_btn = $('#submit_files');
+    submit_btn.on('click', function(e){
+        //파일이 첨부되어 있는지
+        if(FILE_NUM === 0){
+            alert('첨부파일이 없습니다.\n분석할 파일을 추가해 주세요')
+            return
+        }
+        
+        // 분석할 파일이 있다면
+        let form_data = saveFilesToForm();
+        e.preventDefault(); // a태그는 클릭하면 해당 주소로 가야되는데 안가게
+        $.ajax({
+            method: 'POST',
+            url: '/process',
+            data: form_data,
+            dataType: 'json', // 사용자가 받을 데이터(서버가 보낸) 양식
+            contentType: false, // txt, img 구분없이 binary로 보냄
+            processData: false, // 파일 처리x (서버가 하도록)
+            cache: false, // 임시 저장x
+            success: function(result){ // result : json
+                let text_area = $('#floatingTextarea2');
+                $('#textarea_label').remove();
+                text_area.attr('readonly', false);
+                text_area.val(result['content']);
+                text_area.attr('readonly', true);
+            }, 
+            error: function(error){
+                alert('에러가 발생했습니다. 관리자에게 문의해 주세요');
+                console.log(error)
+                return;
+            },
+        });
+    });
+
+    // 화면 초기화 버튼 클릭했을 경우
+    $('#clear-content-btn').on('click', function(){
+        location.reload()
+    });
+});
+
+function saveFilesToForm(){
+    let form = $('form');
+    let form_data = new FormData(form[0]);
+    for(let i=0; i<FILE_ARRAY.length; i++){
+        form_data.append('file', FILE_ARRAY[i])
+    }
+    return form_data
 }

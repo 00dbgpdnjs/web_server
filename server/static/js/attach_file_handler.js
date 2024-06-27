@@ -118,27 +118,28 @@ $(function(){
         기존(I 딥러닝 배포) : 단방향 (클라이언트가 request 보내면 서버가 response 보냄)
         소켓 : 양방향
     */
-    $(function(){
-        const socket = io();
-        // 서버(main_views.py' index())와 연결
-        socket.connect('http://172.20.232.107:5678/');
-        socket.on('connect', function(){
-            console.log('success');
-        });
-        const result_text_area = $('#result_text_area');
-        const p_bar_area = $('#p_bar_area');
-        socket.on('process_status', function(percent){ // 2nd : callback
-            if(percent < 100){
-                p_bar_area.attr('hidden', false);
-                console.log('Progress :', percent);
-                update_progressbar(percent)
-            } else {
-                update_progressbar(0)
-                p_bar_area.attr('hidden', true);
-                result_text_area.attr('hidden', false);
-            }
+    const socket = io();
+    let socket_id = undefined;
+    // 서버(main_views.py' index())와 연결
+    socket.connect('http://172.20.232.107:5678');
+    socket.on('connect', function(){
+        console.log('success!!');
+        socket_id = socket.id; // 이걸 서버에 전달해주면됨 : url: `/process/${socket_id}`,
+        console.log('socket_id :', socket_id);
+    });
+    const result_text_area = $('#result_text_area');
+    const p_bar_area = $('#p_bar_area');
+    socket.on('process_status', function(percent){ // 2nd : callback
+        if(percent < 100){
+            p_bar_area.attr('hidden', false);
+            console.log('Progress :', percent);
+            update_progressbar(percent)
+        } else {
+            update_progressbar(0)
+            p_bar_area.attr('hidden', true);
+            result_text_area.attr('hidden', false);
+        }
 
-        });
     });
 
     let submit_btn = $('#submit_files');
@@ -154,7 +155,7 @@ $(function(){
         e.preventDefault(); // a태그는 클릭하면 해당 주소로 가야되는데 안가게
         $.ajax({
             method: 'POST',
-            url: '/process',
+            url: `/process/${socket_id}`,
             data: form_data,
             dataType: 'json', // 사용자가 받을 데이터(서버가 보낸) 양식
             contentType: false, // txt, img 구분없이 binary로 보냄

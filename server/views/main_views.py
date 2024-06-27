@@ -50,8 +50,8 @@ def index():
 #     return jsonify({'content': 'fail'}) 
 
 # 비동기 처리: async, await, socket.io 등 반영
-@bp.route('/process', methods=['POST'])
-async def process():
+@bp.route('/process/<socket_id>', methods=['POST'])
+async def process(socket_id):
     '''딥러닝 요청에 대한 답변'''
     if request.method == 'POST': # request라는 http 약속대로 채워진걸 받음
         files = request.files.getlist('file') # attach_file_handler에서 form_data.append('file', FILE_ARRAY[i]) 즉 'file'이라 해서
@@ -64,12 +64,16 @@ async def process():
         # 딥러닝 알고리즘
         # - 딥러닝 학습 -> epoch 10회 수행한다고 가정
         NUM_EPOCH = 10
+        print('socket_id :', socket_id)
         for x in range(10):
             # Socket.io 통신 : 한 에폭이 끝날 때마다 몇 퍼센트 남았는지 알려줌
             percent = (x+1)/NUM_EPOCH * 100
             print(f'percent: {percent}%')
-            socketio.emit('process_status', percent) # 1st : 변수명(클라이언트 단에서 값을 참조하기 위해)
-            await sleep(2)
+            # emit
+            # - 1st : 변수명(클라이언트 단에서 값을 참조하기 위해)
+            # - to : 특정 사용자의 프로그레스바만 업뎃되게
+            socketio.emit('process_status', percent, to=socket_id) 
+            await sleep(1)
         
         
         # 결과를 클라이언트에게 전달

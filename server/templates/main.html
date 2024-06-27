@@ -30,7 +30,8 @@
 </div>
 
 <!-- Progressbar -->
-<div class="container" id="p_bar_area">
+<div class="container" id="p_bar_area" hidden>
+    <p>서버 처리 중입니다. 잠시만 기다려주세요...</p>
     <div class="progress" style="height: 30px;">
         <div class="progress-bar progress-bar-striped progress-bar-animated" 
             role="progressbar" 
@@ -43,7 +44,7 @@
 </div>
 
 <!-- 서버 처리 결과 -->
-<div class="row">
+<div class="row" id="result_text_area" hidden>
     <div class="container m-3">
         <div>
             <p>서버 처리 결과입니다.</p>

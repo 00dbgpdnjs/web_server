@@ -125,9 +125,19 @@ $(function(){
         socket.on('connect', function(){
             console.log('success');
         });
+        const result_text_area = $('#result_text_area');
+        const p_bar_area = $('#p_bar_area');
         socket.on('process_status', function(percent){ // 2nd : callback
-            console.log(percent);
-            update_progressbar(percent)
+            if(percent < 100){
+                p_bar_area.attr('hidden', false);
+                console.log('Progress :', percent);
+                update_progressbar(percent)
+            } else {
+                update_progressbar(0)
+                p_bar_area.attr('hidden', true);
+                result_text_area.attr('hidden', false);
+            }
+
         });
     });
 

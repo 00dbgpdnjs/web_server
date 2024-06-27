@@ -105,8 +105,25 @@ function deleteFile(num){
     FILE_NUM--;
 }
 
+function update_progressbar(percent) {
+	let p_bar = $('#p_bar');
+	p_bar.css('width', `${percent}%`);
+	p_bar.attr('aria-valuenow', percent);
+	p_bar.text(`${percent}%`);
+}
+
 // "서버 전송하기" 버튼을 클릭한 경우 파일을 서버로 보내기 (비동기 통신)
 $(function(){
+    /* socket.io 처리 */
+    $(function(){
+        const socket = io();
+        // 서버(main_views.py)와 연결
+        socket.connect('http://172.20.232.107:5667');
+        socket.on('connect', function(){
+            console.log('success');
+        });
+    });
+
     let submit_btn = $('#submit_files');
     submit_btn.on('click', function(e){
         //파일이 첨부되어 있는지

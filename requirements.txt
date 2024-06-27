@@ -1,2 +1,5 @@
 Flask
 Flask-WTF
+flask-socketio
+flask[async]
+Flask-Script

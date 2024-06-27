@@ -12,11 +12,16 @@
         {{ form.csrf_token }}
         <div class="mb-3">
             <label for="formFile" class="form-label">분석할 파일을 선택해 주세요</label>
-            <input class="form-control" type="file" id="formFile">
+            <input class="form-control" type="file" id="formFile" onchange="add_file(this);" multiple>
         </div>
 
         <!-- 첨부된 파일들-->
-        <div class="mb-3 mx-1 row"></div>
+        <div class="mb-3 mx-1 row">
+            <div class="row" id="attached-file-list" hidden>첨부된 파일 목록</div>
+            <div class="col-sm-9">
+                <div class="file-list"></div>
+            </div>
+        </div>
 
         <a href="#" class="btn btn-outline-primary" id="submit_files">서버 전송하기</a>
         <a href="#" class="btn btn-outline-primary" id="clear-content-btn">화면 초기화</a>
